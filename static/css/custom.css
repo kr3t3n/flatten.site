@@ -1,46 +1,19 @@
-.drop-zone {
+.upload-container {
     border: 2px dashed var(--bs-secondary);
-    border-radius: 0.5rem;
-    padding: 2rem;
-    text-align: center;
-    cursor: pointer;
+    border-radius: 8px;
     transition: border-color 0.3s ease;
+    cursor: pointer;
 }
 
-.drop-zone-active {
+.upload-container:hover {
+    border-color: var(--bs-primary);
+}
+
+.upload-container.dragover {
     border-color: var(--bs-primary);
     background-color: rgba(var(--bs-primary-rgb), 0.1);
 }
 
-.drop-zone-prompt {
-    color: var(--bs-secondary);
-}
-
-.drop-zone-prompt i {
-    font-size: 2rem;
-    margin-bottom: 1rem;
-}
-
-.selected-file-name {
-    word-break: break-all;
-}
-
 .progress {
-    height: 0.5rem;
-}
-
-.footer {
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-    background-color: var(--bs-dark);
-}
-
-main {
-    margin-bottom: 100px;
-}
-
-.upload-container {
-    max-width: 600px;
-    margin: 0 auto;
+    height: 25px;
 }
