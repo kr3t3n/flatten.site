@@ -81,9 +81,12 @@ document.addEventListener('DOMContentLoaded', function() {
             const fileList = document.createElement('div');
             fileList.className = 'mt-3';
             fileList.innerHTML = `
-                <button type="button" class="btn btn-primary mb-3 process-files-btn">
+                <button type="button" class="btn btn-primary mb-2 process-files-btn">
                     <i class="bi bi-gear me-2"></i>Process Selected Files
                 </button>
+                <div class="progress mb-3 d-none">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%"></div>
+                </div>
                 
                 <div class="d-flex justify-content-between align-items-center mb-2">
                     <h5 class="mb-0">Select Files to Include</h5>
@@ -109,11 +112,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 </button>
             `;
             
-            // Insert file list before process button
-            const processButtonContainer = document.getElementById('fileInfo');
-            const processButton = document.getElementById('processButton');
-            if (processButtonContainer && processButton) {
-                processButtonContainer.insertBefore(fileList, processButton);
+            // Replace the file info content with the new file list
+            const fileInfoContainer = document.getElementById('fileInfo');
+            if (fileInfoContainer) {
+                // Clear existing content
+                fileInfoContainer.innerHTML = '';
+                // Add the new file list
+                fileInfoContainer.appendChild(fileList);
             }
             
             // Add event listeners after inserting the file list
@@ -191,16 +196,18 @@ document.addEventListener('DOMContentLoaded', function() {
             formData.append('selected_files[]', filename);
         });
 
-        // Show progress
-        progressContainer.classList.remove('d-none');
-        progressBar.style.width = '0%';
+        // Show progress bar
+        const progressBar = document.querySelector('.progress');
+        const progressBarInner = progressBar.querySelector('.progress-bar');
+        progressBar.classList.remove('d-none');
+        progressBarInner.style.width = '0%';
         
         // Simulate progress (actual progress not available for small files)
         let progress = 0;
         const progressInterval = setInterval(() => {
             progress += 5;
             if (progress <= 90) {
-                progressBar.style.width = progress + '%';
+                progressBarInner.style.width = progress + '%';
             }
         }, 100);
 
@@ -210,7 +217,10 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .then(response => {
             clearInterval(progressInterval);
-            progressBar.style.width = '100%';
+            const progressBarInner = document.querySelector('.progress-bar');
+            if (progressBarInner) {
+                progressBarInner.style.width = '100%';
+            }
             
             if (!response.ok) {
                 return response.json().then(data => {
@@ -245,14 +255,20 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Reset form
             setTimeout(() => {
-                progressContainer.classList.add('d-none');
+                const progressBar = document.querySelector('.progress');
+                if (progressBar) {
+                    progressBar.classList.add('d-none');
+                }
                 fileInfo.classList.add('d-none');
                 fileInput.value = '';
             }, 1000);
         })
         .catch(error => {
             clearInterval(progressInterval);
-            progressContainer.classList.add('d-none');
+            const progressBar = document.querySelector('.progress');
+            if (progressBar) {
+                progressBar.classList.add('d-none');
+            }
             showError(error.message);
         });
     }
