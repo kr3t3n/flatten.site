@@ -81,7 +81,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const fileList = document.createElement('div');
             fileList.className = 'mt-3';
             fileList.innerHTML = `
-                <button type="button" class="btn btn-primary mb-3" onclick="processFile()">
+                <button type="button" class="btn btn-primary mb-3 process-files-btn">
                     <i class="bi bi-gear me-2"></i>Process Selected Files
                 </button>
                 
@@ -104,7 +104,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     `).join('')}
                 </div>
                 
-                <button type="button" class="btn btn-primary" onclick="processFile()">
+                <button type="button" class="btn btn-primary process-files-btn">
                     <i class="bi bi-gear me-2"></i>Process Selected Files
                 </button>
             `;
@@ -116,6 +116,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 processButtonContainer.insertBefore(fileList, processButton);
             }
             
+            // Add event listeners after inserting the file list
+            const processButtons = fileList.querySelectorAll('.process-files-btn');
+            processButtons.forEach(button => {
+                button.addEventListener('click', processFile);
+            });
+
             // Add select/deselect all functionality
             document.getElementById('selectAll').addEventListener('click', () => {
                 fileList.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = true);
