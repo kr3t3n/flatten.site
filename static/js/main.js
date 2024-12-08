@@ -101,8 +101,11 @@ document.addEventListener('DOMContentLoaded', function() {
             `;
             
             // Insert file list before process button
+            const processButtonContainer = document.getElementById('fileInfo');
             const processButton = document.getElementById('processButton');
-            processButton.parentNode.insertBefore(fileList, processButton);
+            if (processButtonContainer && processButton) {
+                processButtonContainer.insertBefore(fileList, processButton);
+            }
             
             // Add select/deselect all functionality
             document.getElementById('selectAll').addEventListener('click', () => {
@@ -127,19 +130,23 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Handle output format change
-    outputFormatRadios.forEach(radio => {
-        radio.addEventListener('change', function() {
-            delimiterSection.classList.toggle('d-none', this.value === 'zip');
+    if (outputFormatRadios && delimiterSection) {
+        outputFormatRadios.forEach(radio => {
+            radio.addEventListener('change', function() {
+                delimiterSection.classList.toggle('d-none', this.value === 'zip');
+            });
         });
-    });
+    }
 
     // Handle delimiter suggestions
-    document.querySelectorAll('[data-delimiter]').forEach(item => {
-        item.addEventListener('click', function(e) {
-            e.preventDefault();
-            delimiterInput.value = this.dataset.delimiter;
+    if (delimiterInput) {
+        document.querySelectorAll('[data-delimiter]').forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+                delimiterInput.value = this.dataset.delimiter;
+            });
         });
-    });
+    }
 
     function processFile() {
         const file = fileInput.files[0];
