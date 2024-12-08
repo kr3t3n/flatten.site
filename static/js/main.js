@@ -9,6 +9,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const progressBar = progressContainer.querySelector('.progress-bar');
     const errorContainer = document.getElementById('errorContainer');
     const errorMessage = document.getElementById('errorMessage');
+    
+    // New elements for text output
+    const delimiterSection = document.getElementById('delimiterSection');
+    const delimiterInput = document.getElementById('delimiter');
+    const outputFormatRadios = document.getElementsByName('outputFormat');
 
     // File selection via browse button
     browseButton.addEventListener('click', () => fileInput.click());
@@ -58,12 +63,34 @@ document.addEventListener('DOMContentLoaded', function() {
         errorContainer.classList.add('d-none');
     }
 
+    // Handle output format change
+    outputFormatRadios.forEach(radio => {
+        radio.addEventListener('change', function() {
+            delimiterSection.classList.toggle('d-none', this.value === 'zip');
+        });
+    });
+
+    // Handle delimiter suggestions
+    document.querySelectorAll('[data-delimiter]').forEach(item => {
+        item.addEventListener('click', function(e) {
+            e.preventDefault();
+            delimiterInput.value = this.dataset.delimiter;
+        });
+    });
+
     function processFile() {
         const file = fileInput.files[0];
         if (!file) return;
 
         const formData = new FormData();
         formData.append('file', file);
+        
+        // Add output format and delimiter if text output is selected
+        const outputFormat = document.querySelector('input[name="outputFormat"]:checked').value;
+        formData.append('output_format', outputFormat);
+        if (outputFormat === 'text') {
+            formData.append('delimiter', delimiterInput.value || '^^');
+        }
 
         // Show progress
         progressContainer.classList.remove('d-none');
@@ -92,17 +119,29 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
             }
             
-            return response.blob();
+            return outputFormat === 'zip' ? response.blob() : response.text();
         })
-        .then(blob => {
+        .then(content => {
             // Create download link
-            const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
-            a.href = url;
-            a.download = 'flattened.zip';
-            document.body.appendChild(a);
-            a.click();
-            window.URL.revokeObjectURL(url);
+            const outputFormat = document.querySelector('input[name="outputFormat"]:checked').value;
+            
+            if (outputFormat === 'zip') {
+                const url = window.URL.createObjectURL(content);
+                a.href = url;
+                a.download = 'flattened.zip';
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+            } else {
+                const blob = new Blob([content], { type: 'text/plain' });
+                const url = window.URL.createObjectURL(blob);
+                a.href = url;
+                a.download = 'flattened.txt';
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+            }
             document.body.removeChild(a);
 
             // Reset form

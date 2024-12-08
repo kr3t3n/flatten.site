@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zip File Flattener</title>
+    <title>flatten.site - Hierarchy Flattener</title>
     <link rel="stylesheet" href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
@@ -14,7 +14,39 @@
             <div class="col-md-8">
                 <div class="card">
                     <div class="card-body">
-                        <h1 class="text-center mb-4">Zip File Flattener</h1>
+                        <h1 class="text-center mb-4">flatten.site</h1>
+                        <p class="text-center text-muted mb-4">Flatten your file hierarchies with ease</p>
+                        
+                        <div class="output-format-selection mb-4">
+                            <div class="btn-group w-100" role="group" aria-label="Output format selection">
+                                <input type="radio" class="btn-check" name="outputFormat" id="zipOutput" value="zip" checked>
+                                <label class="btn btn-outline-secondary" for="zipOutput">
+                                    <i class="bi bi-file-earmark-zip me-2"></i>ZIP Output
+                                </label>
+                                
+                                <input type="radio" class="btn-check" name="outputFormat" id="textOutput" value="text">
+                                <label class="btn btn-outline-secondary" for="textOutput">
+                                    <i class="bi bi-file-text me-2"></i>Text Output
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div id="delimiterSection" class="mb-4 d-none">
+                            <label class="form-label">Delimiter for Text Output</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="delimiter" value="^^">
+                                <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                    Suggestions
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li><a class="dropdown-item" href="#" data-delimiter="^^">^^ (Double caret)</a></li>
+                                    <li><a class="dropdown-item" href="#" data-delimiter="||">|| (Double pipe)</a></li>
+                                    <li><a class="dropdown-item" href="#" data-delimiter=">>">>> (Double angle)</a></li>
+                                    <li><a class="dropdown-item" href="#" data-delimiter="::">:: (Double colon)</a></li>
+                                </ul>
+                            </div>
+                            <small class="form-text text-muted">Choose a delimiter to separate file paths and contents</small>
+                        </div>
                         
                         <div class="upload-container text-center p-4" id="dropZone">
                             <i class="bi bi-cloud-upload display-1"></i>

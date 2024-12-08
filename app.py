@@ -42,14 +42,19 @@ def upload_file():
         temp_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         file.save(temp_path)
         
+        # Get output format and delimiter from form data
+        output_format = request.form.get('output_format', 'zip')
+        delimiter = request.form.get('delimiter', '^^')
+        
         # Process the zip file
-        output_path = flatten_zip_hierarchy(temp_path)
+        output_path = flatten_zip_hierarchy(temp_path, output_format, delimiter)
         
         # Send the processed file
         return send_file(
             output_path,
             as_attachment=True,
-            download_name='flattened.zip'
+            download_name='flattened.zip' if output_format == 'zip' else 'flattened.txt',
+            mimetype='application/zip' if output_format == 'zip' else 'text/plain'
         )
     except Exception as e:
         logging.error(f"Error processing file: {str(e)}")
