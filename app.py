@@ -2,7 +2,7 @@ import os
 import logging
 from flask import Flask, render_template, request, send_file, jsonify, flash, redirect, url_for
 from werkzeug.utils import secure_filename
-from utils.zip_handler import flatten_zip_hierarchy
+from utils import flatten_zip_hierarchy, list_zip_contents
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
