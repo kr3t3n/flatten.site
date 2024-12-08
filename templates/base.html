@@ -18,9 +18,39 @@
         {% block content %}{% endblock %}
     </main>
 
-    <footer class="footer mt-auto py-3 bg-dark">
-        <div class="container text-center">
-            <span class="text-muted">ZIP File Flattener - A simple tool to flatten your ZIP file hierarchies</span>
+    <footer class="footer mt-auto py-4 bg-dark border-top border-secondary">
+        <div class="container">
+            <div class="row align-items-center justify-content-between">
+                <div class="col-12 col-sm-auto mb-3 mb-sm-0">
+                    <div class="d-flex justify-content-center justify-content-sm-start gap-4">
+                        <a href="{{ url_for('terms') }}" class="text-muted text-decoration-none hover-text-primary">Terms</a>
+                        <a href="{{ url_for('privacy') }}" class="text-muted text-decoration-none hover-text-primary">Privacy</a>
+                        <a href="{{ url_for('contact') }}" class="text-muted text-decoration-none hover-text-primary">Contact</a>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-auto text-center text-sm-end">
+                    <div class="d-flex flex-column flex-sm-row align-items-center gap-3">
+                        <a href="https://www.buymeacoffee.com/georgipep" 
+                           target="_blank" 
+                           rel="noopener noreferrer" 
+                           class="text-muted text-decoration-none hover-text-primary">
+                            Like flatten.site? Show your love with a ☕
+                        </a>
+                        <p class="text-muted mb-0">
+                            Created by 
+                            <a href="https://x.com/georgipep" 
+                               target="_blank" 
+                               rel="noopener noreferrer" 
+                               class="text-primary text-decoration-none hover-text-decoration-underline">
+                                Georgi
+                            </a>
+                            <br class="d-sm-none">
+                            <span class="d-none d-sm-inline"> - </span>
+                            Mangia Studios Limited
+                        </p>
+                    </div>
+                </div>
+            </div>
         </div>
     </footer>
 

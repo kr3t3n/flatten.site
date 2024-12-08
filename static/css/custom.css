@@ -17,3 +17,17 @@
 .progress {
     height: 25px;
 }
+
+.hover-text-primary:hover {
+    color: var(--bs-primary) !important;
+}
+
+.hover-text-decoration-underline:hover {
+    text-decoration: underline !important;
+}
+
+/* Flash messages */
+.alert {
+    margin-bottom: 1rem;
+    border-radius: 0.375rem;
+}

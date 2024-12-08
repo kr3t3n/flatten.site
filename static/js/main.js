@@ -58,9 +58,72 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        fileName.textContent = file.name;
-        fileInfo.classList.remove('d-none');
-        errorContainer.classList.add('d-none');
+        // First, list the files in the ZIP
+        const formData = new FormData();
+        formData.append('file', file);
+
+        fetch('/list-files', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                throw new Error(data.error);
+            }
+            
+            // Show file selection interface
+            fileName.textContent = file.name;
+            fileInfo.classList.remove('d-none');
+            errorContainer.classList.add('d-none');
+            
+            // Create and show file selection list
+            const fileList = document.createElement('div');
+            fileList.className = 'mt-3';
+            fileList.innerHTML = `
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h5 class="mb-0">Select Files to Include</h5>
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-sm btn-outline-secondary" id="selectAll">Select All</button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" id="deselectAll">Deselect All</button>
+                    </div>
+                </div>
+                <div class="list-group">
+                    ${data.files.map(file => `
+                        <label class="list-group-item">
+                            <input class="form-check-input me-2" type="checkbox" value="${file.name}" checked>
+                            <small class="text-muted d-block">Original: ${file.name}</small>
+                            <small class="text-muted d-block">Flattened: ${file.flattened_name}</small>
+                            <small class="text-muted d-block">Size: ${formatFileSize(file.size)}</small>
+                        </label>
+                    `).join('')}
+                </div>
+            `;
+            
+            // Insert file list before process button
+            const processButton = document.getElementById('processButton');
+            processButton.parentNode.insertBefore(fileList, processButton);
+            
+            // Add select/deselect all functionality
+            document.getElementById('selectAll').addEventListener('click', () => {
+                fileList.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = true);
+            });
+            
+            document.getElementById('deselectAll').addEventListener('click', () => {
+                fileList.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+            });
+        })
+        .catch(error => {
+            showError(error.message);
+        });
+    }
+
+    function formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
     }
 
     // Handle output format change
@@ -82,6 +145,15 @@ document.addEventListener('DOMContentLoaded', function() {
         const file = fileInput.files[0];
         if (!file) return;
 
+        // Get selected files
+        const selectedFiles = Array.from(document.querySelectorAll('.list-group-item input[type="checkbox"]:checked'))
+            .map(cb => cb.value);
+        
+        if (selectedFiles.length === 0) {
+            showError('Please select at least one file to process');
+            return;
+        }
+
         const formData = new FormData();
         formData.append('file', file);
         
@@ -91,6 +163,11 @@ document.addEventListener('DOMContentLoaded', function() {
         if (outputFormat === 'text') {
             formData.append('delimiter', delimiterInput.value || '^^');
         }
+        
+        // Add selected files
+        selectedFiles.forEach(filename => {
+            formData.append('selected_files[]', filename);
+        });
 
         // Show progress
         progressContainer.classList.remove('d-none');

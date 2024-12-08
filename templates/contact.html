@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <h1 class="mb-4">Contact Us</h1>
+            <p class="mb-4">Have questions or suggestions? We'd love to hear from you.</p>
+
+            <form method="POST" action="{{ url_for('contact') }}">
+                <div class="mb-3">
+                    <label for="name" class="form-label">Full Name</label>
+                    <input type="text" class="form-control" id="name" name="name" placeholder="John Doe" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email Address</label>
+                    <input type="email" class="form-control" id="email" name="email" placeholder="john@example.com" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="message" class="form-label">Message</label>
+                    <textarea class="form-control" id="message" name="message" rows="5" placeholder="Your message here..." required></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Send Message</button>
+            </form>
+
+            <div class="mt-5">
+                <h2 class="h5 mb-3">Company Information</h2>
+                <p>
+                    Mangia Studios Limited<br>
+                    Contact: <a href="https://x.com/georgipep" target="_blank" rel="noopener noreferrer" class="text-primary">@georgipep</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
