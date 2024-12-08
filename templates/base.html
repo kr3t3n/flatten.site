@@ -17,14 +17,24 @@
     <link rel="stylesheet" href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
+    <style>
+        @import url('https://fonts.cdnfonts.com/css/helvetica-neue-55');
+        .brand-text {
+            font-family: 'Helvetica Neue Medium', sans-serif;
+            letter-spacing: -0.5px;
+        }
+    </style>
 </head>
 <body class="d-flex flex-column min-vh-100">
     <nav class="navbar navbar-dark bg-dark py-4">
         <div class="container">
-            <a class="navbar-brand d-flex align-items-center mx-auto" href="/">
-                <img src="{{ url_for('static', filename='favicon.png') }}" alt="logo" class="me-3" height="72">
-                <span class="display-4 mb-0">flatten.site</span>
-            </a>
+            <div class="text-center w-100">
+                <a class="navbar-brand d-flex align-items-center justify-content-center" href="/">
+                    <img src="{{ url_for('static', filename='favicon.png') }}" alt="logo" class="me-3" height="72">
+                    <span class="display-4 mb-0 brand-text">flatten.site</span>
+                </a>
+                <p class="text-secondary mb-0 mt-2">Transform nested file structures into organized, searchable paths</p>
+            </div>
         </div>
     </nav>
 
