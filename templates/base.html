@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
 </head>
-<body>
+<body class="d-flex flex-column min-vh-100">
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark border-bottom border-secondary">
         <div class="container">
             <a class="navbar-brand d-flex align-items-center" href="/">
@@ -32,44 +32,9 @@
         </div>
     </nav>
 
-    <main class="container my-4">
+    <main class="flex-grow-1">
         {% block content %}{% endblock %}
     </main>
-
-    <footer class="footer mt-auto py-4 bg-dark border-top border-secondary">
-        <div class="container">
-            <div class="row justify-content-between align-items-center g-4">
-                <div class="col-12 col-md-auto">
-                    <div class="d-flex flex-column flex-md-row align-items-center gap-3">
-                        <a href="{{ url_for('terms') }}" class="text-secondary text-decoration-none hover-text-primary">Terms</a>
-                        <a href="{{ url_for('privacy') }}" class="text-secondary text-decoration-none hover-text-primary">Privacy</a>
-                        <a href="{{ url_for('contact') }}" class="text-secondary text-decoration-none hover-text-primary">Contact</a>
-                    </div>
-                </div>
-                <div class="col-12 col-md-auto">
-                    <div class="d-flex flex-column flex-md-row align-items-center gap-3">
-                        <a href="https://www.buymeacoffee.com/georgipep" 
-                           target="_blank" 
-                           rel="noopener noreferrer" 
-                           class="btn btn-outline-primary btn-sm">
-                           <i class="bi bi-cup-hot me-2"></i>Buy me a coffee
-                        </a>
-                        <div class="text-secondary small">
-                            Created by 
-                            <a href="https://x.com/georgipep" 
-                               target="_blank" 
-                               rel="noopener noreferrer" 
-                               class="text-primary text-decoration-none hover-text-decoration-underline">
-                                @georgipep
-                            </a>
-                            <span class="mx-2">|</span>
-                            flatten.site
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </footer>
 
     <footer class="footer mt-auto py-4 bg-dark border-top border-secondary">
         <div class="container">
