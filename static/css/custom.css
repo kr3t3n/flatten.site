@@ -31,6 +31,24 @@
     text-decoration: underline !important;
 }
 
+/* Heading styles */
+.text-primary-gradient {
+    color: var(--bs-primary);
+    background: linear-gradient(45deg, var(--bs-primary), #9461ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* Icon hover effects */
+.feature-icon {
+    transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.feature-icon:hover {
+    transform: translateY(-5px);
+    color: var(--bs-primary) !important;
+}
+
 /* Flash messages */
 .alert {
     margin-bottom: 1rem;
