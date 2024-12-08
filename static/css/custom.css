@@ -1,3 +1,8 @@
+:root {
+    --bs-primary: #6f42c1;
+    --bs-primary-rgb: 111, 66, 193;
+}
+
 .upload-container {
     border: 2px dashed var(--bs-secondary);
     border-radius: 8px;
