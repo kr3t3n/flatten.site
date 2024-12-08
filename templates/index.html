@@ -4,11 +4,9 @@
 <div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-md-8">
-            <div class="card">
+            <!-- File Upload Card -->
+            <div class="card mb-5">
                 <div class="card-body">
-                    <h1 class="text-center mb-4">flatten.site</h1>
-                    <p class="text-center text-muted mb-4">Flatten your file hierarchies with ease</p>
-                    
                     <div class="output-format-selection mb-4">
                         <div class="btn-group w-100" role="group" aria-label="Output format selection">
                             <input type="radio" class="btn-check" name="outputFormat" id="zipOutput" value="zip" checked>
@@ -72,6 +70,36 @@
                         <div class="alert alert-danger">
                             <i class="bi bi-exclamation-triangle"></i>
                             <span id="errorMessage"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content Section -->
+            <div class="text-center">
+                <h1 class="display-4 mb-3">flatten.site</h1>
+                <h2 class="h4 text-muted mb-4">Flatten your file hierarchies with ease</h2>
+                
+                <div class="row mt-5">
+                    <div class="col-md-4">
+                        <div class="mb-4">
+                            <i class="bi bi-folder-symlink display-4"></i>
+                            <h3 class="h5 mt-3">Path-based Naming</h3>
+                            <p class="text-muted">Convert nested directories into flat paths using customizable delimiters</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="mb-4">
+                            <i class="bi bi-cloud-arrow-up display-4"></i>
+                            <h3 class="h5 mt-3">Easy Upload</h3>
+                            <p class="text-muted">Simple drag-and-drop interface for quick file processing</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="mb-4">
+                            <i class="bi bi-shield-check display-4"></i>
+                            <h3 class="h5 mt-3">Secure Processing</h3>
+                            <p class="text-muted">Files are processed securely and deleted immediately after completion</p>
                         </div>
                     </div>
                 </div>
