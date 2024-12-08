@@ -81,6 +81,10 @@ document.addEventListener('DOMContentLoaded', function() {
             const fileList = document.createElement('div');
             fileList.className = 'mt-3';
             fileList.innerHTML = `
+                <button type="button" class="btn btn-primary mb-3" onclick="processFile()">
+                    <i class="bi bi-gear me-2"></i>Process Selected Files
+                </button>
+                
                 <div class="d-flex justify-content-between align-items-center mb-2">
                     <h5 class="mb-0">Select Files to Include</h5>
                     <div class="btn-group" role="group">
@@ -88,7 +92,8 @@ document.addEventListener('DOMContentLoaded', function() {
                         <button type="button" class="btn btn-sm btn-outline-secondary" id="deselectAll">Deselect All</button>
                     </div>
                 </div>
-                <div class="list-group">
+                
+                <div class="list-group mb-3">
                     ${data.files.map(file => `
                         <label class="list-group-item">
                             <input class="form-check-input me-2" type="checkbox" value="${file.name}" checked>
@@ -98,6 +103,10 @@ document.addEventListener('DOMContentLoaded', function() {
                         </label>
                     `).join('')}
                 </div>
+                
+                <button type="button" class="btn btn-primary" onclick="processFile()">
+                    <i class="bi bi-gear me-2"></i>Process Selected Files
+                </button>
             `;
             
             // Insert file list before process button
