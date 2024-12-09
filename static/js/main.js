@@ -94,11 +94,10 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             // Show file selection interface
-            fileName.textContent = file.name;
             fileInfo.classList.remove('d-none');
             errorContainer.classList.add('d-none');
             
-            // Create file tree structure
+            // Create file tree structure for each ZIP file
             const createFileTree = (files) => {
                 const tree = {};
                 
@@ -177,7 +176,18 @@ document.addEventListener('DOMContentLoaded', function() {
             const fileList = document.createElement('div');
             fileList.className = 'mt-3';
             
-            const fileTree = createFileTree(data.files);
+            // Create HTML for each ZIP file
+            const zipFilesHtml = Object.entries(data).map(([zipName, files]) => {
+                const fileTree = createFileTree(files);
+                return `
+                    <div class="zip-file-section mb-4">
+                        <h5 class="mb-3">${zipName}</h5>
+                        <ul class="file-tree mb-3">
+                            ${renderFileTree(fileTree)}
+                        </ul>
+                    </div>
+                `;
+            }).join('');
             
             fileList.innerHTML = `
                 <button type="button" class="btn btn-primary mb-2 process-files-btn">
@@ -195,9 +205,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     </div>
                 </div>
                 
-                <ul class="file-tree mb-3">
-                    ${renderFileTree(fileTree)}
-                </ul>
+                ${zipFilesHtml}
                 
                 <button type="button" class="btn btn-primary process-files-btn">
                     <i class="bi bi-gear me-2"></i>Process Selected Files
@@ -298,8 +306,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function processFile() {
-        const file = fileInput.files[0];
-        if (!file) return;
+        const files = fileInput.files;
+        if (!files || files.length === 0) return;
 
         // Get selected files (only actual files, not folders)
         const selectedFiles = Array.from(document.querySelectorAll('.file-tree-item input[type="checkbox"]:not(.folder-checkbox):checked'))
@@ -311,7 +319,9 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         const formData = new FormData();
-        formData.append('file', file);
+        Array.from(files).forEach(file => {
+            formData.append('files[]', file);
+        });
         
         // Add output format and delimiter if text output is selected
         const outputFormat = document.querySelector('input[name="outputFormat"]:checked').value;
