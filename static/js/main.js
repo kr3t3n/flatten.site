@@ -285,29 +285,9 @@ document.addEventListener('DOMContentLoaded', function() {
             .map(cb => cb.value);
         
         if (selectedFiles.length === 0) {
-            // Show error near both process buttons
-            const errorHTML = `
-                <div class="alert alert-danger mb-3">
-                    <i class="bi bi-exclamation-triangle me-2"></i>
-                    Please select at least one file to process
-                </div>
-            `;
-            
-            // Find all process buttons and show error above them
-            document.querySelectorAll('.process-files-btn').forEach(btn => {
-                // Remove any existing error messages
-                const existingError = btn.parentElement.querySelector('.alert-danger');
-                if (existingError) {
-                    existingError.remove();
-                }
-                // Insert new error message before the button
-                btn.insertAdjacentHTML('beforebegin', errorHTML);
-            });
+            showError('Please select at least one file to process');
             return;
         }
-
-        // Remove any existing error messages when processing starts
-        document.querySelectorAll('.alert-danger').forEach(el => el.remove());
         
         const formData = new FormData();
         formData.append('file', file);
@@ -402,7 +382,15 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function showError(message) {
-        errorMessage.textContent = message;
-        errorContainer.classList.remove('d-none');
+        const toastMessage = document.getElementById('toastMessage');
+        const errorToast = document.getElementById('errorToast');
+        
+        toastMessage.textContent = message;
+        const toast = new bootstrap.Toast(errorToast, {
+            animation: true,
+            autohide: true,
+            delay: 5000
+        });
+        toast.show();
     }
 });
