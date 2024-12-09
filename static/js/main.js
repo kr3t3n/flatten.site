@@ -364,9 +364,18 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!response.ok) {
                 return response.json().then(data => {
                     throw new Error(data.error || 'Processing failed');
+                }).catch(err => {
+                    // If JSON parsing fails, it might be an HTML error page
+                    throw new Error('Server error occurred. Please try again.');
                 });
             }
             
+            const contentType = response.headers.get('content-type');
+            if (contentType && contentType.includes('application/json')) {
+                return response.json().then(data => {
+                    throw new Error(data.error || 'Processing failed');
+                });
+            }
             return outputFormat === 'zip' ? response.blob() : response.text();
         })
         .then(content => {

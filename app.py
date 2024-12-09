@@ -1,5 +1,6 @@
 import os
 import logging
+import zipfile
 from flask import Flask, render_template, request, send_file, jsonify, flash, redirect, url_for
 from werkzeug.utils import secure_filename
 from utils import flatten_zip_hierarchy, list_zip_contents
