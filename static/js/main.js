@@ -45,23 +45,44 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function handleFiles(files) {
-        const file = files[0];
-        if (!file) return;
+        // Convert FileList to Array for easier manipulation
+        const filesArray = Array.from(files);
+        if (filesArray.length === 0) return;
 
-        if (!file.name.toLowerCase().endsWith('.zip')) {
-            showError('Please select a ZIP file');
+        // Check number of files
+        if (filesArray.length > 5) {
+            showError('Maximum 5 files can be processed at once');
             return;
         }
 
-        if (file.size > 50 * 1024 * 1024) {
-            showError('File size exceeds 50MB limit');
+        // Validate file types
+        const invalidFiles = filesArray.filter(file => !file.name.toLowerCase().endsWith('.zip'));
+        if (invalidFiles.length > 0) {
+            showError('Please select only ZIP files');
             return;
         }
 
-        // First, list the files in the ZIP
+        // Validate individual file sizes
+        const oversizedFiles = filesArray.filter(file => file.size > 50 * 1024 * 1024);
+        if (oversizedFiles.length > 0) {
+            showError(`Files exceeding 50MB limit: ${oversizedFiles.map(f => f.name).join(', ')}`);
+            return;
+        }
+
+        // Validate total size
+        const totalSize = filesArray.reduce((sum, file) => sum + file.size, 0);
+        if (totalSize > 200 * 1024 * 1024) {
+            showError('Total file size exceeds 200MB limit');
+            return;
+        }
+
+        // Create form data with all files
         const formData = new FormData();
-        formData.append('file', file);
+        filesArray.forEach((file, index) => {
+            formData.append('files[]', file);
+        });
 
+        // List contents of all ZIP files
         fetch('/list-files', {
             method: 'POST',
             body: formData

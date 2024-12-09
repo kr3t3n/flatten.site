@@ -13,10 +13,14 @@ app.secret_key = os.environ.get("FLASK_SECRET_KEY") or "a secret key"
 # Configure upload settings
 UPLOAD_FOLDER = '/tmp'
 ALLOWED_EXTENSIONS = {'zip'}
-MAX_CONTENT_LENGTH = 50 * 1024 * 1024  # 50MB limit
+MAX_FILE_SIZE = 50 * 1024 * 1024  # 50MB per file limit
+MAX_TOTAL_SIZE = 200 * 1024 * 1024  # 200MB total limit
+MAX_FILES = 5  # Maximum number of files that can be processed at once
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-app.config['MAX_CONTENT_LENGTH'] = MAX_CONTENT_LENGTH
+app.config['MAX_CONTENT_LENGTH'] = MAX_TOTAL_SIZE
+app.config['MAX_FILE_SIZE'] = MAX_FILE_SIZE
+app.config['MAX_FILES'] = MAX_FILES
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -27,72 +31,124 @@ def index():
 
 @app.route('/list-files', methods=['POST'])
 def list_zip_files():
-    if 'file' not in request.files:
-        return jsonify({'error': 'No file provided'}), 400
+    if 'files[]' not in request.files:
+        return jsonify({'error': 'No files provided'}), 400
     
-    file = request.files['file']
-    if file.filename == '':
-        return jsonify({'error': 'No file selected'}), 400
-    
-    if not allowed_file(file.filename):
-        return jsonify({'error': 'Invalid file type. Only ZIP files are allowed'}), 400
+    files = request.files.getlist('files[]')
+    if not files or all(file.filename == '' for file in files):
+        return jsonify({'error': 'No files selected'}), 400
 
+    result = {}
+    temp_paths = []
+    
     try:
-        filename = secure_filename(file.filename)
-        temp_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-        file.save(temp_path)
-        
-        # List files in the ZIP
-        files = list_zip_contents(temp_path)
-        return jsonify({'files': files})
+        for file in files:
+            if not allowed_file(file.filename):
+                return jsonify({'error': f'Invalid file type for {file.filename}. Only ZIP files are allowed'}), 400
+
+            filename = secure_filename(file.filename)
+            temp_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            file.save(temp_path)
+            temp_paths.append(temp_path)
+            
+            # List files in each ZIP
+            files_in_zip = list_zip_contents(temp_path)
+            result[filename] = files_in_zip
+            
+        return jsonify(result)
     except Exception as e:
         logging.error(f"Error listing zip contents: {str(e)}")
-        return jsonify({'error': 'Error reading ZIP file'}), 500
+        return jsonify({'error': 'Error reading ZIP files'}), 500
     finally:
-        if os.path.exists(temp_path):
-            os.remove(temp_path)
+        for path in temp_paths:
+            if os.path.exists(path):
+                os.remove(path)
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
-    if 'file' not in request.files:
-        return jsonify({'error': 'No file provided'}), 400
+    if 'files[]' not in request.files:
+        return jsonify({'error': 'No files provided'}), 400
     
-    file = request.files['file']
-    if file.filename == '':
-        return jsonify({'error': 'No file selected'}), 400
-    
-    if not allowed_file(file.filename):
-        return jsonify({'error': 'Invalid file type. Only ZIP files are allowed'}), 400
+    files = request.files.getlist('files[]')
+    if not files or all(file.filename == '' for file in files):
+        return jsonify({'error': 'No files selected'}), 400
+
+    if len(files) > app.config['MAX_FILES']:
+        return jsonify({'error': f'Maximum {app.config["MAX_FILES"]} files can be processed at once'}), 400
+
+    # Validate total size
+    total_size = sum(file.seek(0, 2) or file.seek(0) or file.tell() for file in files)
+    if total_size > app.config['MAX_TOTAL_SIZE']:
+        return jsonify({'error': f'Total file size exceeds {app.config["MAX_TOTAL_SIZE"] // (1024*1024)}MB limit'}), 400
+
+    # Validate individual files
+    for file in files:
+        if not allowed_file(file.filename):
+            return jsonify({'error': f'Invalid file type for {file.filename}. Only ZIP files are allowed'}), 400
+        if file.seek(0, 2) or file.seek(0) or file.tell() > app.config['MAX_FILE_SIZE']:
+            return jsonify({'error': f'File {file.filename} exceeds {app.config["MAX_FILE_SIZE"] // (1024*1024)}MB limit'}), 400
 
     try:
-        filename = secure_filename(file.filename)
-        temp_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-        file.save(temp_path)
+        temp_paths = []
+        processed_files = []
         
-        # Get output format, delimiter, and selected files from form data
+        # Get output format and delimiter from form data
         output_format = request.form.get('output_format', 'zip')
         delimiter = request.form.get('delimiter', '^^')
-        selected_files = request.form.getlist('selected_files[]')
         
-        # Process the zip file with selected files
-        output_path = flatten_zip_hierarchy(temp_path, selected_files, output_format, delimiter)
+        # Process each file
+        for file in files:
+            filename = secure_filename(file.filename)
+            temp_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            file.save(temp_path)
+            temp_paths.append(temp_path)
+            
+            # Get selected files for this zip
+            selected_files = request.form.getlist(f'selected_files[{filename}][]')
+            
+            # Process the zip file
+            output_path = flatten_zip_hierarchy(temp_path, selected_files, output_format, delimiter)
+            processed_files.append((output_path, filename))
+
+        # If only one file, return it directly
+        if len(processed_files) == 1:
+            output_path, original_name = processed_files[0]
+            base_name = os.path.splitext(original_name)[0]
+            return send_file(
+                output_path,
+                as_attachment=True,
+                download_name=f'{base_name}_flattened.{"zip" if output_format == "zip" else "txt"}',
+                mimetype='application/zip' if output_format == 'zip' else 'text/plain'
+            )
         
-        # Send the processed file
+        # For multiple files, create a combined zip
+        combined_zip_path = os.path.join(app.config['UPLOAD_FOLDER'], 'combined_flattened.zip')
+        with zipfile.ZipFile(combined_zip_path, 'w', zipfile.ZIP_DEFLATED) as combined_zip:
+            for output_path, original_name in processed_files:
+                base_name = os.path.splitext(original_name)[0]
+                arcname = f'{base_name}_flattened.{"zip" if output_format == "zip" else "txt"}'
+                combined_zip.write(output_path, arcname)
+        
         return send_file(
-            output_path,
+            combined_zip_path,
             as_attachment=True,
-            download_name='flattened.zip' if output_format == 'zip' else 'flattened.txt',
-            mimetype='application/zip' if output_format == 'zip' else 'text/plain'
+            download_name='flattened_files.zip',
+            mimetype='application/zip'
         )
+        
     except Exception as e:
-        logging.error(f"Error processing file: {str(e)}")
-        return jsonify({'error': 'Error processing file'}), 500
+        logging.error(f"Error processing files: {str(e)}")
+        return jsonify({'error': 'Error processing files'}), 500
     finally:
         # Cleanup temporary files
-        if os.path.exists(temp_path):
-            os.remove(temp_path)
-        if 'output_path' in locals() and os.path.exists(output_path):
-            os.remove(output_path)
+        for path in temp_paths:
+            if os.path.exists(path):
+                os.remove(path)
+        for output_path, _ in processed_files:
+            if os.path.exists(output_path):
+                os.remove(output_path)
+        if 'combined_zip_path' in locals() and os.path.exists(combined_zip_path):
+            os.remove(combined_zip_path)
 
 @app.errorhandler(413)
 def request_entity_too_large(error):
