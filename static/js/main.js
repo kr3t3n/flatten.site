@@ -77,9 +77,87 @@ document.addEventListener('DOMContentLoaded', function() {
             fileInfo.classList.remove('d-none');
             errorContainer.classList.add('d-none');
             
+            // Create file tree structure
+            const createFileTree = (files) => {
+                const tree = {};
+                
+                files.forEach(file => {
+                    const parts = file.name.split('/');
+                    let current = tree;
+                    
+                    parts.forEach((part, index) => {
+                        if (index === parts.length - 1) {
+                            // It's a file
+                            current[part] = {
+                                type: 'file',
+                                ...file
+                            };
+                        } else {
+                            // It's a directory
+                            current[part] = current[part] || {
+                                type: 'directory',
+                                children: {}
+                            };
+                            current = current[part].children;
+                        }
+                    });
+                });
+                
+                return tree;
+            };
+            
+            // Render file tree HTML
+            const renderFileTree = (tree, level = 0) => {
+                const items = Object.entries(tree).map(([name, node]) => {
+                    if (node.type === 'file') {
+                        const tooltipContent = `
+                            Original: ${node.name}
+                            Flattened: ${node.flattened_name}
+                            Size: ${formatFileSize(node.size)}
+                        `.replace(/\n\s+/g, '\n');
+                        
+                        return `
+                            <li class="file-tree-item" data-bs-toggle="tooltip" data-bs-html="true" 
+                                title="${tooltipContent}">
+                                <span class="file-tree-toggle" style="visibility: hidden;">
+                                    <i class="bi bi-file-text"></i>
+                                </span>
+                                <label class="file-tree-content">
+                                    <input class="form-check-input" type="checkbox" value="${node.name}" checked>
+                                    <span class="file-name">${name}</span>
+                                </label>
+                            </li>
+                        `;
+                    } else {
+                        return `
+                            <li>
+                                <div class="file-tree-item">
+                                    <span class="file-tree-toggle">
+                                        <i class="bi bi-chevron-right"></i>
+                                    </span>
+                                    <label class="file-tree-content">
+                                        <input class="form-check-input folder-checkbox" type="checkbox" checked>
+                                        <i class="bi bi-folder me-1"></i>
+                                        <span class="file-name">${name}</span>
+                                    </label>
+                                </div>
+                                <ul class="collapse">
+                                    ${renderFileTree(node.children, level + 1)}
+                                </ul>
+                            </li>
+                        `;
+                    }
+                }).join('');
+                
+                return items;
+            };
+            
             // Create and show file selection list
             const fileList = document.createElement('div');
             fileList.className = 'mt-3';
+            
+            const fileTree = createFileTree(data.files);
+            
             fileList.innerHTML = `
                 <button type="button" class="btn btn-primary mb-2 process-files-btn">
                     <i class="bi bi-gear me-2"></i>Process Selected Files
@@ -96,16 +174,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     </div>
                 </div>
                 
-                <div class="list-group mb-3">
-                    ${data.files.map(file => `
-                        <label class="list-group-item">
-                            <input class="form-check-input me-2" type="checkbox" value="${file.name}" checked>
-                            <small class="text-muted d-block">Original: ${file.name}</small>
-                            <small class="text-muted d-block">Flattened: ${file.flattened_name}</small>
-                            <small class="text-muted d-block">Size: ${formatFileSize(file.size)}</small>
-                        </label>
-                    `).join('')}
-                </div>
+                <ul class="file-tree mb-3">
+                    ${renderFileTree(fileTree)}
+                </ul>
                 
                 <button type="button" class="btn btn-primary process-files-btn">
                     <i class="bi bi-gear me-2"></i>Process Selected Files
@@ -121,10 +192,47 @@ document.addEventListener('DOMContentLoaded', function() {
                 fileInfoContainer.appendChild(fileList);
             }
             
+            // Initialize tooltips
+            const tooltips = [].slice.call(fileList.querySelectorAll('[data-bs-toggle="tooltip"]'))
+            tooltips.forEach(function (tooltip) {
+                new bootstrap.Tooltip(tooltip, {
+                    html: true,
+                    placement: 'right'
+                });
+            });
+
             // Add event listeners after inserting the file list
             const processButtons = fileList.querySelectorAll('.process-files-btn');
             processButtons.forEach(button => {
                 button.addEventListener('click', processFile);
+            });
+
+            // Handle folder toggles
+            fileList.querySelectorAll('.file-tree-toggle').forEach(toggle => {
+                if (!toggle.style.visibility || toggle.style.visibility !== 'hidden') {
+                    toggle.addEventListener('click', (e) => {
+                        const item = e.currentTarget.closest('.file-tree-item');
+                        const icon = item.querySelector('.bi-chevron-right, .bi-chevron-down');
+                        const ul = item.nextElementSibling;
+                        
+                        if (icon.classList.contains('bi-chevron-right')) {
+                            icon.classList.replace('bi-chevron-right', 'bi-chevron-down');
+                            ul.classList.add('show');
+                        } else {
+                            icon.classList.replace('bi-chevron-down', 'bi-chevron-right');
+                            ul.classList.remove('show');
+                        }
+                    });
+                }
+            });
+
+            // Handle folder checkboxes
+            fileList.querySelectorAll('.folder-checkbox').forEach(checkbox => {
+                checkbox.addEventListener('change', (e) => {
+                    const folder = e.target.closest('li');
+                    const childCheckboxes = folder.querySelectorAll('input[type="checkbox"]');
+                    childCheckboxes.forEach(cb => cb.checked = e.target.checked);
+                });
             });
 
             // Add select/deselect all functionality
