@@ -18,10 +18,13 @@ MAX_FILE_SIZE = 50 * 1024 * 1024  # 50MB per file limit
 MAX_TOTAL_SIZE = 200 * 1024 * 1024  # 200MB total limit
 MAX_FILES = 5  # Maximum number of files that can be processed at once
 
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-app.config['MAX_CONTENT_LENGTH'] = MAX_TOTAL_SIZE
-app.config['MAX_FILE_SIZE'] = MAX_FILE_SIZE
-app.config['MAX_FILES'] = MAX_FILES
+app.config.update(
+    UPLOAD_FOLDER=UPLOAD_FOLDER,
+    MAX_CONTENT_LENGTH=MAX_TOTAL_SIZE,
+    MAX_FILE_SIZE=MAX_FILE_SIZE,
+    MAX_FILES=MAX_FILES,
+    MAX_TOTAL_SIZE=MAX_TOTAL_SIZE
+)
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -105,11 +108,16 @@ def upload_file():
             temp_paths.append(temp_path)
             
             # Get selected files for this zip
-            selected_files = request.form.getlist(f'selected_files[{filename}][]')
+            selected_files = request.form.getlist('selected_files[]')
+            logging.debug(f"Selected files for {filename}: {selected_files}")
             
             # Process the zip file
-            output_path = flatten_zip_hierarchy(temp_path, selected_files, output_format, delimiter)
-            processed_files.append((output_path, filename))
+            try:
+                output_path = flatten_zip_hierarchy(temp_path, selected_files, output_format, delimiter)
+                processed_files.append((output_path, filename))
+            except Exception as e:
+                logging.error(f"Error processing {filename}: {str(e)}")
+                raise
 
         # If only one file, return it directly
         if len(processed_files) == 1:

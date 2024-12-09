@@ -330,9 +330,10 @@ document.addEventListener('DOMContentLoaded', function() {
             formData.append('delimiter', delimiterInput.value || '^^');
         }
         
-        // Add selected files
+        // Add selected files with their associated zip files
         selectedFiles.forEach(filename => {
             formData.append('selected_files[]', filename);
+            console.log('Adding selected file:', filename);
         });
 
         // Show progress bar
