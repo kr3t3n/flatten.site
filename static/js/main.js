@@ -436,6 +436,18 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
+// Handle website output format changes
+document.querySelectorAll('input[name="webOutputFormat"]').forEach(radio => {
+    radio.addEventListener('change', (e) => {
+        const delimiterSection = document.getElementById('webDelimiterSection');
+        if (e.target.value === 'text') {
+            delimiterSection.classList.remove('d-none');
+        } else {
+            delimiterSection.classList.add('d-none');
+        }
+    });
+});
+
 // Website crawler form handler
 const crawlerForm = document.getElementById('crawlerForm');
 if (crawlerForm) {
@@ -445,27 +457,29 @@ if (crawlerForm) {
         const url = document.getElementById('websiteUrl').value;
         const maxPages = document.getElementById('maxPages').value;
         const outputFormat = document.querySelector('input[name="webOutputFormat"]:checked').value;
+        const delimiter = document.getElementById('webDelimiter')?.value || '^^';
         
-        // Show progress
-        const progressBar = document.querySelector('.progress');
-        const progressBarInner = progressBar.querySelector('.progress-bar');
-        progressBar.classList.remove('d-none');
-        progressBarInner.style.width = '0%';
+        // Show progress container and status
+        const progressContainer = document.getElementById('progressContainer');
+        const progressBar = progressContainer.querySelector('.progress-bar');
+        progressContainer.classList.remove('d-none');
+        progressBar.style.width = '0%';
+        progressBar.textContent = 'Starting crawl...';
         
-        // Simulate progress
+        // Update progress with actual crawling status
         let progress = 0;
         const progressInterval = setInterval(() => {
-            progress += 2;
-            if (progress <= 90) {
-                progressBarInner.style.width = progress + '%';
-            }
-        }, 500);
+            progress = Math.min(progress + 1, 90);
+            progressBar.style.width = `${progress}%`;
+            progressBar.textContent = `Crawling website... ${progress}%`;
+        }, 1000);
         
         try {
             const formData = new FormData();
             formData.append('url', url);
             formData.append('max_pages', maxPages);
             formData.append('output_format', outputFormat);
+            formData.append('delimiter', delimiter);
             
             const response = await fetch('/crawl-website', {
                 method: 'POST',
@@ -473,12 +487,15 @@ if (crawlerForm) {
             });
             
             clearInterval(progressInterval);
-            progressBarInner.style.width = '100%';
             
             if (!response.ok) {
                 const data = await response.json();
                 throw new Error(data.error || 'Error crawling website');
             }
+            
+            // Show completion status
+            progressBar.style.width = '100%';
+            progressBar.textContent = 'Download starting...';
             
             // Download the file
             const blob = await response.blob();
@@ -491,10 +508,18 @@ if (crawlerForm) {
             window.URL.revokeObjectURL(downloadUrl);
             document.body.removeChild(a);
             
-            // Reset form
+            // Reset form and progress
             setTimeout(() => {
-                progressBar.classList.add('d-none');
+                progressContainer.classList.add('d-none');
+                progressBar.style.width = '0%';
+                progressBar.textContent = '';
                 crawlerForm.reset();
+                
+                // Reset delimiter section visibility
+                const delimiterSection = document.getElementById('webDelimiterSection');
+                if (delimiterSection) {
+                    delimiterSection.classList.add('d-none');
+                }
             }, 1000);
             
         } catch (error) {
