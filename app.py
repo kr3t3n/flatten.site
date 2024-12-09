@@ -80,44 +80,64 @@ def upload_file():
     if len(files) > app.config['MAX_FILES']:
         return jsonify({'error': f'Maximum {app.config["MAX_FILES"]} files can be processed at once'}), 400
 
-    # Validate total size
-    total_size = sum(file.seek(0, 2) or file.seek(0) or file.tell() for file in files)
-    if total_size > app.config['MAX_TOTAL_SIZE']:
-        return jsonify({'error': f'Total file size exceeds {app.config["MAX_TOTAL_SIZE"] // (1024*1024)}MB limit'}), 400
-
-    # Validate individual files
+    # Validate file types first
     for file in files:
         if not allowed_file(file.filename):
             return jsonify({'error': f'Invalid file type for {file.filename}. Only ZIP files are allowed'}), 400
-        if file.seek(0, 2) or file.seek(0) or file.tell() > app.config['MAX_FILE_SIZE']:
-            return jsonify({'error': f'File {file.filename} exceeds {app.config["MAX_FILE_SIZE"] // (1024*1024)}MB limit'}), 400
 
+    # Reset file pointers and validate sizes
+    total_size = 0
+    for file in files:
+        try:
+            file.seek(0, 2)  # Seek to end
+            file_size = file.tell()
+            file.seek(0)  # Reset to beginning
+            
+            if file_size > app.config['MAX_FILE_SIZE']:
+                return jsonify({'error': f'File {file.filename} exceeds {app.config["MAX_FILE_SIZE"] // (1024*1024)}MB limit'}), 400
+            
+            total_size += file_size
+        except Exception as e:
+            logging.error(f"Error checking file size for {file.filename}: {str(e)}")
+            return jsonify({'error': 'Error processing file upload'}), 400
+
+    if total_size > app.config['MAX_TOTAL_SIZE']:
+        return jsonify({'error': f'Total file size exceeds {app.config["MAX_TOTAL_SIZE"] // (1024*1024)}MB limit'}), 400
+
+    temp_paths = []
+    processed_files = []
+    
     try:
-        temp_paths = []
-        processed_files = []
-        
         # Get output format and delimiter from form data
         output_format = request.form.get('output_format', 'zip')
         delimiter = request.form.get('delimiter', '^^')
         
+        # Get all selected files
+        selected_files = request.form.getlist('selected_files[]')
+        if not selected_files:
+            return jsonify({'error': 'No files selected for processing'}), 400
+            
+        logging.debug(f"Selected files: {selected_files}")
+        
         # Process each file
         for file in files:
-            filename = secure_filename(file.filename)
-            temp_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-            file.save(temp_path)
-            temp_paths.append(temp_path)
-            
-            # Get selected files for this zip
-            selected_files = request.form.getlist('selected_files[]')
-            logging.debug(f"Selected files for {filename}: {selected_files}")
-            
-            # Process the zip file
             try:
+                filename = secure_filename(file.filename)
+                temp_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                file.save(temp_path)
+                temp_paths.append(temp_path)
+                
+                # Verify the file is a valid ZIP
+                if not zipfile.is_zipfile(temp_path):
+                    raise ValueError(f"File {filename} is not a valid ZIP file")
+                
+                # Process the zip file
                 output_path = flatten_zip_hierarchy(temp_path, selected_files, output_format, delimiter)
                 processed_files.append((output_path, filename))
+                
             except Exception as e:
                 logging.error(f"Error processing {filename}: {str(e)}")
-                raise
+                return jsonify({'error': f'Error processing {filename}: {str(e)}'}), 400
 
         # If only one file, return it directly
         if len(processed_files) == 1:
