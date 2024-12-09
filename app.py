@@ -4,6 +4,7 @@ import zipfile
 from flask import Flask, render_template, request, send_file, jsonify, flash, redirect, url_for
 from werkzeug.utils import secure_filename
 from utils import flatten_zip_hierarchy, list_zip_contents
+from utils.web_crawler import crawl_website, create_flattened_output
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
@@ -205,4 +206,32 @@ def contact():
         flash('Thank you for your message. We will get back to you soon!', 'success')
         return redirect(url_for('contact'))
     
+@app.route('/crawl-website', methods=['POST'])
+def crawl_site():
+    url = request.form.get('url')
+    if not url:
+        return jsonify({'error': 'No URL provided'}), 400
+        
+    output_format = request.form.get('output_format', 'zip')
+    delimiter = request.form.get('delimiter', '^^')
+    max_pages = int(request.form.get('max_pages', 100))
+    
+    try:
+        # Crawl website
+        temp_dir, crawled_pages = crawl_website(url, max_pages)
+        
+        # Create flattened output
+        output_path = create_flattened_output(temp_dir, crawled_pages, output_format, delimiter)
+        
+        # Send file
+        return send_file(
+            output_path,
+            as_attachment=True,
+            download_name=f'flattened_website.{output_format}',
+            mimetype='application/zip' if output_format == 'zip' else 'text/plain'
+        )
+        
+    except Exception as e:
+        logging.error(f"Error processing website: {str(e)}")
+        return jsonify({'error': str(e)}), 500
     return render_template('contact.html')

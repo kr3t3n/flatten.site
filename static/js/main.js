@@ -435,3 +435,72 @@ document.addEventListener('DOMContentLoaded', function() {
         toast.show();
     }
 });
+
+// Website crawler form handler
+const crawlerForm = document.getElementById('crawlerForm');
+if (crawlerForm) {
+    crawlerForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const url = document.getElementById('websiteUrl').value;
+        const maxPages = document.getElementById('maxPages').value;
+        const outputFormat = document.querySelector('input[name="webOutputFormat"]:checked').value;
+        
+        // Show progress
+        const progressBar = document.querySelector('.progress');
+        const progressBarInner = progressBar.querySelector('.progress-bar');
+        progressBar.classList.remove('d-none');
+        progressBarInner.style.width = '0%';
+        
+        // Simulate progress
+        let progress = 0;
+        const progressInterval = setInterval(() => {
+            progress += 2;
+            if (progress <= 90) {
+                progressBarInner.style.width = progress + '%';
+            }
+        }, 500);
+        
+        try {
+            const formData = new FormData();
+            formData.append('url', url);
+            formData.append('max_pages', maxPages);
+            formData.append('output_format', outputFormat);
+            
+            const response = await fetch('/crawl-website', {
+                method: 'POST',
+                body: formData
+            });
+            
+            clearInterval(progressInterval);
+            progressBarInner.style.width = '100%';
+            
+            if (!response.ok) {
+                const data = await response.json();
+                throw new Error(data.error || 'Error crawling website');
+            }
+            
+            // Download the file
+            const blob = await response.blob();
+            const downloadUrl = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = downloadUrl;
+            a.download = `flattened_website.${outputFormat}`;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(downloadUrl);
+            document.body.removeChild(a);
+            
+            // Reset form
+            setTimeout(() => {
+                progressBar.classList.add('d-none');
+                crawlerForm.reset();
+            }, 1000);
+            
+        } catch (error) {
+            clearInterval(progressInterval);
+            progressBar.classList.add('d-none');
+            showError(error.message);
+        }
+    });
+}

@@ -8,16 +8,81 @@
             <div class="card mb-5">
                 <div class="card-body">
                     <div class="output-format-selection mb-4">
-                        <div class="btn-group w-100" role="group" aria-label="Output format selection">
-                            <input type="radio" class="btn-check" name="outputFormat" id="zipOutput" value="zip" checked>
-                            <label class="btn btn-outline-secondary" for="zipOutput">
-                                <i class="bi bi-file-earmark-zip me-2"></i>ZIP Output
-                            </label>
+                        <ul class="nav nav-tabs mb-3" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="zip-tab" data-bs-toggle="tab" data-bs-target="#zip-content" type="button" role="tab">
+                                    <i class="bi bi-file-earmark-zip me-2"></i>ZIP Files
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="web-tab" data-bs-toggle="tab" data-bs-target="#web-content" type="button" role="tab">
+                                    <i class="bi bi-globe me-2"></i>Websites
+                                </button>
+                            </li>
+                        </ul>
+                        
+                        <div class="tab-content">
+                            <div class="tab-pane fade show active" id="zip-content" role="tabpanel">
+                                <div class="btn-group w-100 mb-4" role="group" aria-label="Output format selection">
+                                    <input type="radio" class="btn-check" name="outputFormat" id="zipOutput" value="zip" checked>
+                                    <label class="btn btn-outline-secondary" for="zipOutput">
+                                        <i class="bi bi-file-earmark-zip me-2"></i>ZIP Output
+                                    </label>
+                                    
+                                    <input type="radio" class="btn-check" name="outputFormat" id="textOutput" value="text">
+                                    <label class="btn btn-outline-secondary" for="textOutput">
+                                        <i class="bi bi-file-text me-2"></i>Text Output
+                                    </label>
+                                </div>
+                                
+                                <!-- ZIP file upload content -->
+                                <div class="upload-container text-center p-4" id="dropZone">
+                                    <i class="bi bi-cloud-upload display-1"></i>
+                                    <p class="mt-3">Drag & drop your ZIP files here or click to browse</p>
+                                    <p class="text-danger small">Note: Only ZIP files (.zip) are supported</p>
+                                    <form id="uploadForm" class="mt-3">
+                                        <input type="file" id="fileInput" accept=".zip" multiple class="d-none">
+                                        <button type="button" class="btn btn-secondary" id="browseButton">
+                                            Choose ZIP Files
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
                             
-                            <input type="radio" class="btn-check" name="outputFormat" id="textOutput" value="text">
-                            <label class="btn btn-outline-secondary" for="textOutput">
-                                <i class="bi bi-file-text me-2"></i>Text Output
-                            </label>
+                            <div class="tab-pane fade" id="web-content" role="tabpanel">
+                                <div class="btn-group w-100 mb-4" role="group" aria-label="Website output format selection">
+                                    <input type="radio" class="btn-check" name="webOutputFormat" id="webZipOutput" value="zip" checked>
+                                    <label class="btn btn-outline-secondary" for="webZipOutput">
+                                        <i class="bi bi-file-earmark-zip me-2"></i>ZIP Output
+                                    </label>
+                                    
+                                    <input type="radio" class="btn-check" name="webOutputFormat" id="webTextOutput" value="text">
+                                    <label class="btn btn-outline-secondary" for="webTextOutput">
+                                        <i class="bi bi-file-text me-2"></i>Text Output
+                                    </label>
+                                </div>
+                                
+                                <!-- Website crawler form -->
+                                <form id="crawlerForm" class="text-center p-4">
+                                    <div class="form-group mb-4">
+                                        <label for="websiteUrl" class="form-label">Website URL</label>
+                                        <input type="url" class="form-control" id="websiteUrl" 
+                                               placeholder="Enter website URL (e.g., example.com)" required>
+                                        <small class="form-text text-muted">Enter the website URL to crawl and flatten its structure</small>
+                                    </div>
+                                    
+                                    <div class="form-group mb-4">
+                                        <label for="maxPages" class="form-label">Maximum Pages</label>
+                                        <input type="number" class="form-control" id="maxPages" 
+                                               value="100" min="1" max="500" required>
+                                        <small class="form-text text-muted">Maximum number of pages to crawl (1-500)</small>
+                                    </div>
+                                    
+                                    <button type="submit" class="btn btn-primary" id="crawlButton">
+                                        <i class="bi bi-globe me-2"></i>Start Crawling
+                                    </button>
+                                </form>
+                            </div>
                         </div>
                     </div>
                     
