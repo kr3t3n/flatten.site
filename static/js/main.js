@@ -280,15 +280,35 @@ document.addEventListener('DOMContentLoaded', function() {
         const file = fileInput.files[0];
         if (!file) return;
 
-        // Get selected files
-        const selectedFiles = Array.from(document.querySelectorAll('.list-group-item input[type="checkbox"]:checked'))
+        // Get selected files (only actual files, not folders)
+        const selectedFiles = Array.from(document.querySelectorAll('.file-tree-item input[type="checkbox"]:not(.folder-checkbox):checked'))
             .map(cb => cb.value);
         
         if (selectedFiles.length === 0) {
-            showError('Please select at least one file to process');
+            // Show error near both process buttons
+            const errorHTML = `
+                <div class="alert alert-danger mb-3">
+                    <i class="bi bi-exclamation-triangle me-2"></i>
+                    Please select at least one file to process
+                </div>
+            `;
+            
+            // Find all process buttons and show error above them
+            document.querySelectorAll('.process-files-btn').forEach(btn => {
+                // Remove any existing error messages
+                const existingError = btn.parentElement.querySelector('.alert-danger');
+                if (existingError) {
+                    existingError.remove();
+                }
+                // Insert new error message before the button
+                btn.insertAdjacentHTML('beforebegin', errorHTML);
+            });
             return;
         }
 
+        // Remove any existing error messages when processing starts
+        document.querySelectorAll('.alert-danger').forEach(el => el.remove());
+        
         const formData = new FormData();
         formData.append('file', file);
         
