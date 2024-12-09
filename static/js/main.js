@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Validate file types
         const invalidFiles = filesArray.filter(file => !file.name.toLowerCase().endsWith('.zip'));
         if (invalidFiles.length > 0) {
-            showError('Please select only ZIP files');
+            showError(`Invalid file type: ${invalidFiles.map(f => f.name).join(', ')}. Only ZIP files (.zip) are allowed`);
             return;
         }
 

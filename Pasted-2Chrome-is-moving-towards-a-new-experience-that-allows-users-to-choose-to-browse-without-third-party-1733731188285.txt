@@ -1,0 +1,98 @@
+2Chrome is moving towards a new experience that allows users to choose to browse without third-party cookies.
+main.js:336 Adding selected file: Install Cursor.app/Contents/CodeResources
+main.js:336 Adding selected file: Install Cursor.app/Contents/Info.plist
+main.js:336 Adding selected file: Install Cursor.app/Contents/MacOS/ToDesktop Installer
+main.js:336 Adding selected file: Install Cursor.app/Contents/PkgInfo
+main.js:336 Adding selected file: Install Cursor.app/Contents/Resources/Base.lproj/Main.storyboardc/Info.plist
+main.js:336 Adding selected file: Install Cursor.app/Contents/Resources/Base.lproj/Main.storyboardc/MainMenu.nib
+main.js:336 Adding selected file: Install Cursor.app/Contents/Resources/Base.lproj/Main.storyboardc/NSWindowController-B8D-0N-5wS.nib
+main.js:336 Adding selected file: Install Cursor.app/Contents/Resources/Base.lproj/Main.storyboardc/XfG-lQ-9wD-view-m2S-Jp-Qdl.nib
+main.js:336 Adding selected file: Install Cursor.app/Contents/Resources/Icon.icns
+main.js:336 Adding selected file: Install Cursor.app/Contents/Resources/de.lproj/Localizable.strings
+main.js:336 Adding selected file: Install Cursor.app/Contents/Resources/de.lproj/Main.strings
+main.js:336 Adding selected file: Install Cursor.app/Contents/Resources/en.lproj/Localizable.strings
+main.js:336 Adding selected file: Install Cursor.app/Contents/Resources/es.lproj/Localizable.strings
+main.js:336 Adding selected file: Install Cursor.app/Contents/Resources/es.lproj/Main.strings
+main.js:336 Adding selected file: Install Cursor.app/Contents/Resources/fr.lproj/Localizable.strings
+main.js:336 Adding selected file: Install Cursor.app/Contents/Resources/fr.lproj/Main.strings
+main.js:336 Adding selected file: Install Cursor.app/Contents/Resources/it.lproj/Localizable.strings
+main.js:336 Adding selected file: Install Cursor.app/Contents/Resources/it.lproj/Main.strings
+main.js:336 Adding selected file: Install Cursor.app/Contents/Resources/ja.lproj/Localizable.strings
+main.js:336 Adding selected file: Install Cursor.app/Contents/Resources/ja.lproj/Main.strings
+main.js:336 Adding selected file: Install Cursor.app/Contents/Resources/nl.lproj/Localizable.strings
+main.js:336 Adding selected file: Install Cursor.app/Contents/Resources/nl.lproj/Main.strings
+main.js:336 Adding selected file: Install Cursor.app/Contents/Resources/pt-BR.lproj/Localizable.strings
+main.js:336 Adding selected file: Install Cursor.app/Contents/Resources/pt-BR.lproj/Main.strings
+main.js:336 Adding selected file: Install Cursor.app/Contents/Resources/zh-Hans.lproj/Localizable.strings
+main.js:336 Adding selected file: Install Cursor.app/Contents/Resources/zh-Hans.lproj/Main.strings
+main.js:336 Adding selected file: Install Cursor.app/Contents/_CodeSignature/CodeResources
+main.js:336 Adding selected file: project/.env.local
+main.js:336 Adding selected file: project/README.md
+main.js:336 Adding selected file: project/package-lock.json
+main.js:336 Adding selected file: project/eslint.config.js
+main.js:336 Adding selected file: project/.bolt/prompt
+main.js:336 Adding selected file: project/.bolt/config.json
+main.js:336 Adding selected file: project/public/_redirects
+main.js:336 Adding selected file: project/public/favicon.svg
+main.js:336 Adding selected file: project/index.html
+main.js:336 Adding selected file: project/src/App.tsx
+main.js:336 Adding selected file: project/src/vite-env.d.ts
+main.js:336 Adding selected file: project/src/main.tsx
+main.js:336 Adding selected file: project/src/pages/Contact.tsx
+main.js:336 Adding selected file: project/src/pages/Privacy.tsx
+main.js:336 Adding selected file: project/src/pages/Auth.tsx
+main.js:336 Adding selected file: project/src/pages/Documents.tsx
+main.js:336 Adding selected file: project/src/pages/Terms.tsx
+main.js:336 Adding selected file: project/src/components/Header.tsx
+main.js:336 Adding selected file: project/src/components/AuthCallback.tsx
+main.js:336 Adding selected file: project/src/components/Card.tsx
+main.js:336 Adding selected file: project/src/components/ExportCard.tsx
+main.js:336 Adding selected file: project/src/components/LayoutControls.tsx
+main.js:336 Adding selected file: project/src/components/Footer.tsx
+main.js:336 Adding selected file: project/src/components/Modal.tsx
+main.js:336 Adding selected file: project/src/components/Toolbar.tsx
+main.js:336 Adding selected file: project/src/components/FormatCard.tsx
+main.js:336 Adding selected file: project/src/components/CopyButton.tsx
+main.js:336 Adding selected file: project/src/components/ThemeToggle.tsx
+main.js:336 Adding selected file: project/src/components/Editor.tsx
+main.js:336 Adding selected file: project/src/types/database.ts
+main.js:336 Adding selected file: project/src/hooks/useAuth.ts
+main.js:336 Adding selected file: project/src/hooks/useDocuments.ts
+main.js:336 Adding selected file: project/src/hooks/useTheme.ts
+main.js:336 Adding selected file: project/src/utils/markdown.ts
+main.js:336 Adding selected file: project/src/utils/documentFormatter.ts
+main.js:336 Adding selected file: project/src/utils/export.ts
+main.js:336 Adding selected file: project/src/lib/database.ts
+main.js:336 Adding selected file: project/src/lib/supabase.ts
+main.js:336 Adding selected file: project/src/index.css
+main.js:336 Adding selected file: project/supabase/functions/stripe-webhook/index.ts
+main.js:336 Adding selected file: project/.gitignore
+main.js:336 Adding selected file: project/tsconfig.app.json
+main.js:336 Adding selected file: project/tailwind.config.js
+main.js:336 Adding selected file: project/tsconfig.json
+main.js:336 Adding selected file: project/postcss.config.js
+main.js:336 Adding selected file: project/projectDesc.md
+main.js:336 Adding selected file: project/tsconfig.node.json
+main.js:336 Adding selected file: project/vite.config.ts
+main.js:336 Adding selected file: project/supabase.sql
+main.js:336 Adding selected file: project/dist/index.html
+main.js:336 Adding selected file: project/dist/favicon.svg
+main.js:336 Adding selected file: project/dist/_redirects
+main.js:336 Adding selected file: project/dist/assets/poppins-latin-ext-600-normal-DB6FJURc.woff
+main.js:336 Adding selected file: project/dist/assets/index-DKYbQn1J.css
+main.js:336 Adding selected file: project/dist/assets/poppins-latin-ext-400-normal-Ce_uWq1Z.woff
+main.js:336 Adding selected file: project/dist/assets/index-BJUrtTjy.js
+main.js:336 Adding selected file: project/dist/assets/poppins-latin-400-normal-cpxAROuN.woff2
+main.js:336 Adding selected file: project/dist/assets/poppins-latin-600-normal-BJdTmd5m.woff
+main.js:336 Adding selected file: project/dist/assets/favicon-BSSTlc6u.svg
+main.js:336 Adding selected file: project/dist/assets/browser-CNzIwE6R.js
+main.js:336 Adding selected file: project/dist/assets/poppins-latin-400-normal-BOb3E3N0.woff
+main.js:336 Adding selected file: project/dist/assets/poppins-latin-600-normal-zEkxB9Mr.woff2
+main.js:336 Adding selected file: project/dist/assets/poppins-latin-ext-400-normal-CIpeJEZw.woff2
+main.js:336 Adding selected file: project/dist/assets/poppins-latin-ext-600-normal-Cn4C8475.woff2
+main.js:336 Adding selected file: project/package.json
+main.js:354 
+        
+        
+       POST https://7f4bf69b-33bf-42ad-8768-65ec060515e0-00-i0ass1uoiqc7.riker.replit.dev/upload 400 (Bad Request)
+processFile @ main.js:354
