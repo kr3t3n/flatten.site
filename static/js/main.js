@@ -288,6 +288,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Handle output format change
     if (outputFormatRadios && delimiterSection) {
+        // Initial setup - make sure UI matches the selected option
+        const selectedFormat = document.querySelector('input[name="outputFormat"]:checked').value;
+        delimiterSection.classList.toggle('d-none', selectedFormat === 'zip');
+        
+        // Add event listeners for format changes
         outputFormatRadios.forEach(radio => {
             radio.addEventListener('change', function() {
                 delimiterSection.classList.toggle('d-none', this.value === 'zip');

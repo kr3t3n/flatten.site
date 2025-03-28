@@ -20,12 +20,12 @@
                         <div class="tab-content">
                             <div class="tab-pane fade show active" id="zip-content" role="tabpanel">
                                 <div class="btn-group w-100 mb-4" role="group" aria-label="Output format selection">
-                                    <input type="radio" class="btn-check" name="outputFormat" id="zipOutput" value="zip" checked>
+                                    <input type="radio" class="btn-check" name="outputFormat" id="zipOutput" value="zip">
                                     <label class="btn btn-outline-secondary" for="zipOutput">
                                         <i class="bi bi-file-earmark-zip me-2"></i>ZIP Output
                                     </label>
                                     
-                                    <input type="radio" class="btn-check" name="outputFormat" id="textOutput" value="text">
+                                    <input type="radio" class="btn-check" name="outputFormat" id="textOutput" value="text" checked>
                                     <label class="btn btn-outline-secondary" for="textOutput">
                                         <i class="bi bi-file-text me-2"></i>Text Output
                                     </label>
@@ -57,7 +57,7 @@
                         </div>
                     </div>
                     
-                    <div id="delimiterSection" class="mb-4 d-none">
+                    <div id="delimiterSection" class="mb-4">
                         <label class="form-label">Delimiter for Text Output</label>
                         <div class="input-group">
                             <input type="text" class="form-control" id="delimiter" value="^^">
