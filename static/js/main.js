@@ -436,6 +436,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
+// Website crawler functionality - code kept but commented out
+/*
 // Handle website output format changes
 document.querySelectorAll('input[name="webOutputFormat"]').forEach(radio => {
     radio.addEventListener('change', (e) => {
@@ -529,3 +531,4 @@ if (crawlerForm) {
         }
     });
 }
+*/
