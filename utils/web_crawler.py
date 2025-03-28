@@ -40,6 +40,7 @@ def crawl_website(base_url, max_pages=100):
     Returns:
         tuple: (temp_dir_path, list of crawled pages)
     """
+    temp_dir = None
     try:
         # Normalize base URL
         if not base_url.startswith(('http://', 'https://')):
@@ -95,9 +96,77 @@ def crawl_website(base_url, max_pages=100):
         
     except Exception as e:
         logging.error(f"Error during website crawling: {str(e)}")
-        if 'temp_dir' in locals():
+        if temp_dir and os.path.exists(temp_dir):
             shutil.rmtree(temp_dir, ignore_errors=True)
         raise
+
+def _generate_filetree(paths):
+    """
+    Generate a filetree representation from a list of file paths.
+    
+    Args:
+        paths (list): List of file paths
+    
+    Returns:
+        str: ASCII filetree representation
+    """
+    if not paths:
+        return "File Tree: (empty)"
+    
+    # Sort paths for consistent display
+    sorted_paths = sorted(paths)
+    
+    # Step 1: Build directory tree structure
+    dir_tree = {}
+    for path in sorted_paths:
+        parts = path.split('/')
+        
+        # Navigate through directory structure
+        current = dir_tree
+        for i, part in enumerate(parts):
+            if i == len(parts) - 1:  # File
+                if '__files__' not in current:
+                    current['__files__'] = []
+                current['__files__'].append(part)
+            else:  # Directory
+                if part not in current:
+                    current[part] = {}
+                current = current[part]
+    
+    # Step 2: Generate ASCII representation
+    filetree = ["File Tree:"]
+    
+    def render_tree(node, prefix="", is_last=True, dir_name=None):
+        lines = []
+        
+        # Process the current directory node
+        if dir_name is not None:
+            connector = "└── " if is_last else "├── "
+            lines.append(f"{prefix}{connector}{dir_name}/")
+            next_prefix = prefix + ("    " if is_last else "│   ")
+        else:
+            next_prefix = prefix
+        
+        # Process subdirectories first (alphabetically)
+        dirs = sorted([d for d in node.keys() if d != '__files__'])
+        for i, d in enumerate(dirs):
+            is_last_dir = (i == len(dirs) - 1 and '__files__' not in node)
+            lines.extend(render_tree(node[d], next_prefix, is_last_dir, d))
+        
+        # Then process files (alphabetically)
+        if '__files__' in node:
+            files = sorted(node['__files__'])
+            for i, f in enumerate(files):
+                is_last_file = (i == len(files) - 1)
+                file_connector = "└── " if is_last_file else "├── "
+                lines.append(f"{next_prefix}{file_connector}{f}")
+        
+        return lines
+    
+    # Generate tree starting from root
+    filetree.extend(render_tree(dir_tree))
+    
+    return '\n'.join(filetree)
 
 def create_flattened_output(temp_dir, crawled_pages, output_format='zip', delimiter='^^'):
     """
@@ -125,6 +194,12 @@ def create_flattened_output(temp_dir, crawled_pages, output_format='zip', delimi
         else:
             output_path = os.path.join('/tmp', 'flattened_website.txt')
             with open(output_path, 'w', encoding='utf-8') as f:
+                # Generate and add filetree at the top of the file
+                paths = [page['path'] for page in crawled_pages]
+                filetree = _generate_filetree(paths)
+                f.write(f"{filetree}\n\n{'='*60}\n\n")
+                
+                # Add individual files with content
                 for page in crawled_pages:
                     file_path = os.path.join(temp_dir, page['path'])
                     flattened_name = page['path'].replace('/', '^')
