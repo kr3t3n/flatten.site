@@ -10,7 +10,10 @@ from utils import flatten_zip_hierarchy, list_zip_contents
 logging.basicConfig(level=logging.DEBUG)
 
 app = Flask(__name__)
-app.secret_key = os.environ.get("FLASK_SECRET_KEY") or "a secret key"
+_secret = os.environ.get("FLASK_SECRET_KEY")
+if not _secret:
+    raise RuntimeError("FLASK_SECRET_KEY must be set")
+app.secret_key = _secret
 
 # Configure upload settings
 UPLOAD_FOLDER = '/tmp'
